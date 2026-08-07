@@ -17,12 +17,17 @@ import torch
 from math import *
 
 
+from functools import partial
+import comfy.samplers
 from comfy.samplers import SchedulerHandler, SCHEDULER_HANDLERS, SCHEDULER_NAMES
-new_scheduler_name = "bong_tangent"
-if new_scheduler_name not in SCHEDULER_HANDLERS:
-    bong_tangent_handler = SchedulerHandler(handler=sigmas.bong_tangent_scheduler, use_ms=True)
-    SCHEDULER_HANDLERS[new_scheduler_name] = bong_tangent_handler
-    SCHEDULER_NAMES.append(new_scheduler_name)
+
+if "bong_tangent" not in SCHEDULER_HANDLERS:
+    SCHEDULER_HANDLERS["bong_tangent"] = SchedulerHandler(handler=sigmas.bong_tangent_scheduler, use_ms=True)
+    SCHEDULER_NAMES.append("bong_tangent")
+
+if "beta57" not in SCHEDULER_HANDLERS:
+    SCHEDULER_HANDLERS["beta57"] = SchedulerHandler(handler=partial(comfy.samplers.beta_scheduler, alpha=0.5, beta=0.7), use_ms=True)
+    SCHEDULER_NAMES.append("beta57")
 
 
 from .res4lyf import RESplain
@@ -143,14 +148,16 @@ NODE_CLASS_MAPPINGS = {
     "Latent Clear State Info"             : nodes_latents.latent_clear_state_info,
     "Latent Replace State Info"           : nodes_latents.latent_replace_state_info,
     "Latent Display State Info"           : nodes_latents.latent_display_state_info,
+    "Latent Extract State Info"           : nodes_latents.latent_extract_state_info,
     "Latent Transfer State Info"          : nodes_latents.latent_transfer_state_info,
     "Latent TrimVideo State Info"         : nodes_latents.TrimVideoLatent_state_info,
+    "Latent CropGuides State Info"        : nodes_latents.LTXVCropGuides_state_info,
+    "Latent Upscale State Info"           : nodes_latents.LatentUpscaleBy_state_info,
+
     "Latent to Cuda"                      : nodes_latents.latent_to_cuda,
     "Latent Batcher"                      : nodes_latents.latent_batch,
     "Latent Normalize Channels"           : nodes_latents.latent_normalize_channels,
     "Latent Channels From To"             : nodes_latents.latent_mean_channels_from_to,
-
-
 
     "LatentPhaseMagnitude"                : nodes_latents.LatentPhaseMagnitude,
     "LatentPhaseMagnitudeMultiply"        : nodes_latents.LatentPhaseMagnitudeMultiply,
